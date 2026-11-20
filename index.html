@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#090d18">
+<title>لعبتي</title>
+<style>
+:root{--bg:#090d18;--panel:#111a2b;--panel2:#172238;--cyan:#35e6ff;--purple:#a879ff;--green:#42efad;--red:#ff5478;--text:#edf4ff;--muted:#91a2bd;--line:#293954}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#1a2850 0%,var(--bg) 58%);color:var(--text);font-family:Tahoma,Arial,sans-serif;min-height:100vh}
+button{font:inherit;cursor:pointer}#app{max-width:760px;margin:auto;min-height:100vh;padding:20px 16px 34px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.brand{font-size:22px;font-weight:800;letter-spacing:.3px;color:var(--cyan);text-shadow:0 0 16px #35e6ff55}.small{color:var(--muted);font-size:13px}
+h1{font-size:clamp(28px,7vw,42px);margin:10px 0 12px}h2{font-size:24px;margin:10px 0 18px}.sub{color:var(--muted);line-height:1.8}
+.screen{display:none}.screen.active{display:block}.center{text-align:center;padding-top:14vh}
+.btn{border:1px solid #35e6ff66;background:linear-gradient(135deg,#16304a,#182442);color:var(--text);padding:14px 22px;border-radius:15px;box-shadow:0 0 22px #35e6ff12;transition:.18s}
+.btn:active{transform:scale(.98)}.primary{background:linear-gradient(100deg,#087f9c,#6544a7);border:0;box-shadow:0 0 24px #35e6ff30;font-weight:bold;min-width:160px}
+.gridlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.card{background:linear-gradient(145deg,#15223a,#101827);border:1px solid var(--line);border-radius:18px;padding:19px 14px;text-align:right;color:var(--text);min-height:100px}
+.card .icon{font-size:25px;display:block;margin-bottom:12px}.card strong{font-size:17px}.card:active{border-color:var(--cyan)}
+.levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.level{min-height:88px;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:7px}.level.locked{opacity:.35;cursor:not-allowed}.level.done{border-color:#42efad88;box-shadow:inset 0 0 18px #42efad12}.level b{font-size:23px;color:var(--cyan)}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.back{background:#18243a;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:9px 13px}
+.progress{height:6px;background:#1b2940;border-radius:8px;overflow:hidden;margin:12px 0 20px}.progress span{height:100%;display:block;background:linear-gradient(90deg,var(--cyan),var(--purple));width:0;transition:width .25s}
+.board-wrap{overflow:auto;padding:8px 2px 18px}.board{display:grid;gap:5px;justify-content:center;margin:0 auto;width:max-content}
+.cell{width:clamp(42px,10vw,58px);height:clamp(42px,10vw,58px);border-radius:10px;background:#121d30;border:1px solid #273a57;display:flex;align-items:center;justify-content:center;font-size:clamp(20px,5vw,26px);font-weight:bold;color:var(--text);position:relative}
+.cell.empty{visibility:hidden}.cell.filled{background:#172b42;border-color:#3b5879}.cell.solved{background:#123b3b;border-color:#42efad88;color:#8dffd1}.cell.selected{outline:2px solid var(--cyan);box-shadow:0 0 16px #35e6ff55}
+.cell .dot{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--cyan);top:5px;right:5px}
+.hint{background:linear-gradient(145deg,#15243c,#101a2c);border:1px solid #2a4262;border-radius:20px;padding:20px;margin:14px 0 18px;text-align:center}
+.hint-label{font-size:12px;color:var(--cyan);margin-bottom:10px}.hint-text{font-size:20px;line-height:1.7}.emoji{font-size:34px;margin-top:8px}
+.letters{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;direction:rtl;margin:18px auto;max-width:100%}
+.letter{width:clamp(39px,9vw,52px);height:54px;border-radius:11px;border:1px solid #395273;background:#0d1727;color:white;text-align:center;font-size:25px;font-weight:bold;outline:none;caret-color:var(--cyan)}
+.letter:focus{border-color:var(--cyan);box-shadow:0 0 13px #35e6ff55}.letter.locked{background:#153c3a;border-color:#42efad88;color:#9bffdc}.letter.wrong{border-color:var(--red);animation:flash .35s 2}.letter.right{border-color:var(--green);background:#124334;animation:flashgreen .35s 2}
+@keyframes flash{50%{background:#6d1e38}}@keyframes flashgreen{50%{background:#176c4c}}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}.mutebtn{background:#17243a;border:1px solid var(--line);color:var(--text);padding:12px 17px;border-radius:12px}
+.note{text-align:center;color:var(--muted);font-size:13px;line-height:1.7;margin-top:16px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#17243a;border:1px solid var(--cyan);padding:12px 18px;border-radius:12px;box-shadow:0 0 22px #35e6ff22;z-index:10;display:none}
+@media(min-width:600px){#app{padding-top:28px}.cell{width:58px;height:58px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header><div class="brand">✦ لعبتي</div><div class="small">ألغاز هادئة • بلا مؤقت</div></header>
+
+<section id="home" class="screen active center">
+  <div style="font-size:58px;margin-bottom:14px">✧</div>
+  <h1>لعبتي</h1>
+  <p class="sub">اكتشف الكلمات، واربط الحروف، واستمتع بالتفكير.</p>
+  <button class="btn primary" onclick="showCategories()">ابدأ</button>
+  <p class="note">نسخة تجريبية أولية</p>
+</section>
+
+<section id="categories" class="screen">
+  <div class="topline"><button class="back" onclick="show('home')">← الرئيسية</button><span class="small">اختر فئة</span></div>
+  <h2>الفئات</h2><div id="categoryList" class="gridlist"></div>
+  <div class="actions"><button class="mutebtn" onclick="show('home')">خروج</button></div>
+</section>
+
+<section id="levels" class="screen">
+  <div class="topline"><button class="back" onclick="showCategories()">← الفئات</button><span class="small" id="categoryCaption"></span></div>
+  <h2>اختر المرحلة</h2><div id="levelList" class="levels"></div>
+</section>
+
+<section id="puzzle" class="screen">
+  <div class="topline"><button class="back" onclick="showLevels()">← المراحل</button><span class="small" id="puzzleTitle"></span></div>
+  <div class="progress"><span id="progressBar"></span></div>
+  <div id="board" class="board-wrap"></div>
+  <p class="note">اضغط على أي خانة لاختيار الكلمة. عند التقاطع، اضغط مجدداً للتبديل بين الاتجاهين.</p>
+  <div class="actions"><button class="mutebtn" onclick="showLevels()">العودة للمراحل</button></div>
+</section>
+
+<section id="clue" class="screen">
+  <div class="topline"><button class="back" onclick="leaveClue()">← الشبكة</button><span class="small" id="clueDirection"></span></div>
+  <div class="hint"><div class="hint-label">التلميح</div><div id="clueText" class="hint-text"></div><div id="clueEmoji" class="emoji"></div></div>
+  <div id="letterBoxes" class="letters"></div>
+  <div class="actions">
+    <button class="btn primary" onclick="checkAnswer()">تحقق من الإجابة</button>
+    <button class="mutebtn" onclick="clearEditable()">مسح الحروف</button>
+  </div>
+  <p class="note">يمكنك الضغط على أي خانة لتعديل حرفها. الحروف المشتركة المحلولة ثابتة.</p>
+</section>
+<div id="toast" class="toast"></div>
+</div>
+
+<script>
+const DATA = [
+ {id:"science",name:"العلوم",icon:"⚛️",levels:[
+  {id:"s1",title:"العلوم • 1",entries:[
+   {id:"a",word:"قمر",r:0,c:0,d:"h",clue:"جرم سماوي طبيعي يدور حول الأرض.",emoji:"🌙"},
+   {id:"b",word:"مطر",r:0,c:1,d:"v",clue:"ماء ينزل من السحب إلى الأرض.",emoji:"🌧️"},
+   {id:"c",word:"طاقة",r:1,c:1,d:"h",clue:"القدرة على بذل شغل أو إحداث تغيير.",emoji:"⚡"}
+  ]},
+  {id:"s2",title:"العلوم • 2",entries:[
+   {id:"a",word:"نبات",r:0,c:0,d:"h",clue:"كائن حي يصنع غذاءه غالباً باستخدام ضوء الشمس.",emoji:"🌱"},
+   {id:"b",word:"بحر",r:0,c:1,d:"v",clue:"مسطح مائي مالح أصغر عادةً من المحيط.",emoji:"🌊"},
+   {id:"c",word:"حوت",r:1,c:1,d:"h",clue:"ثديي بحري ضخم يتنفس الهواء.",emoji:"🐋"}
+  ]}
+ ]},
+ {id:"geo",name:"الجغرافيا",icon:"🌍",levels:[
+  {id:"g1",title:"الجغرافيا • 1",entries:[
+   {id:"a",word:"مصر",r:0,c:0,d:"h",clue:"دولة تقع في شمال شرقي أفريقيا.",emoji:"🇪🇬"},
+   {id:"b",word:"صحراء",r:0,c:1,d:"v",clue:"منطقة واسعة قليلة الأمطار والنباتات.",emoji:"🏜️"},
+   {id:"c",word:"حلب",r:1,c:1,d:"h",clue:"مدينة تاريخية في شمال سوريا.",emoji:"🏙️"}
+  ]},
+  {id:"g2",title:"الجغرافيا • 2",entries:[
+   {id:"a",word:"لندن",r:0,c:0,d:"h",clue:"عاصمة المملكة المتحدة.",emoji:"🇬🇧"},
+   {id:"b",word:"نهر",r:0,c:1,d:"v",clue:"مجرى مائي طبيعي يتدفق نحو بحر أو بحيرة.",emoji:"🏞️"},
+   {id:"c",word:"هرم",r:1,c:1,d:"h",clue:"منشأة ذات قاعدة متعددة الأضلاع وجوانب مثلثة.",emoji:"🔺"}
+  ]}
+ ]},
+ {id:"animals",name:"الحيوانات",icon:"🦁",levels:[
+  {id:"a1",title:"الحيوانات • 1",entries:[
+   {id:"a",word:"أسد",r:0,c:0,d:"h",clue:"حيوان مفترس يُلقب بملك الغابة.",emoji:"🦁"},
+   {id:"b",word:"سمك",r:0,c:1,d:"v",clue:"حيوانات مائية تتنفس غالباً بالخياشيم.",emoji:"🐟"},
+   {id:"c",word:"مهر",r:1,c:1,d:"h",clue:"اسم صغير الحصان.",emoji:"🐎"}
+  ]},
+  {id:"a2",title:"الحيوانات • 2",entries:[
+   {id:"a",word:"فيل",r:0,c:0,d:"h",clue:"حيوان بري ضخم يتميز بخرطوم طويل.",emoji:"🐘"},
+   {id:"b",word:"يمام",r:0,c:1,d:"v",clue:"طائر يشبه الحمام ويُعرف بصوته الهادئ.",emoji:"🕊️"},
+   {id:"c",word:"مهر",r:1,c:1,d:"h",clue:"اسم صغير الحصان.",emoji:"🐴"}
+  ]}
+ ]}
+];
+
+const $=id=>document.getElementById(id);
+let category=null, level=null, selected=null, selectedDir=null, lastCell=null, lastCellDir=null, drafts={};
+let saved=JSON.parse(localStorage.getItem("laabati_progress")||"{}");
+function save(){localStorage.setItem("laabati_progress",JSON.stringify(saved))}
+function key(){return category.id+"_"+level.id}
+function solved(){return new Set(saved[key()]||[])}
+function isSolved(e){return solved().has(e.id)}
+function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$(id).classList.add("active")}
+function showCategories(){
+ $('categoryList').innerHTML=DATA.map(cat=>`<button class="card" onclick="openCategory('${cat.id}')"><span class="icon">${cat.icon}</span><strong>${cat.name}</strong><div class="small">مرحلتان</div></button>`).join('');
+ show('categories');
+}
+function openCategory(id){category=DATA.find(x=>x.id===id);$('categoryCaption').textContent=category.name;renderLevels();show('levels')}
+function stageComplete(lvl){return (saved[category.id+"_"+lvl.id]||[]).length===lvl.entries.length}
+function renderLevels(){
+ const idx=category.levels.findIndex((l,i)=>i>0&&!stageComplete(category.levels[i-1]));
+ $('levelList').innerHTML=category.levels.map((l,i)=>{
+  const unlocked=i===0||stageComplete(category.levels[i-1]);const done=stageComplete(l);
+  return `<button class="card level ${!unlocked?'locked':''} ${done?'done':''}" ${unlocked?`onclick="openLevel(${i})"`:''}><b>${done?'✓':i+1}</b><span>${done?'مكتملة':unlocked?'ابدأ المرحلة':'🔒 مغلقة'}</span></button>`;
+ }).join('');
+}
+function showLevels(){if(category){renderLevels();show('levels')}else showCategories()}
+function openLevel(i){level=category.levels[i];drafts={};selected=null;renderBoard();show('puzzle')}
+function makeCells(){
+ let cells={};
+ level.entries.forEach(e=>[...e.word].forEach((ch,i)=>{
+  let r=e.r+(e.d==='v'?i:0),c=e.c+(e.d==='h'?i:0),k=r+","+c;
+  if(!cells[k])cells[k]={r,c,words:[]};cells[k].words.push({entry:e,index:i});
+ }));
+ return cells;
+}
+function renderBoard(){
+ $('puzzleTitle').textContent=level.title;
+ const cells=makeCells(),coords=Object.values(cells),maxR=Math.max(...coords.map(x=>x.r)),maxC=Math.max(...coords.map(x=>x.c));
+ const minR=Math.min(...coords.map(x=>x.r)),minC=Math.min(...coords.map(x=>x.c));
+ let html=`<div class="board" style="grid-template-columns:repeat(${maxC-minC+1},clamp(42px,10vw,58px))">`;
+ for(let r=minR;r<=maxR;r++)for(let c=minC;c<=maxC;c++){
+  let cell=cells[r+","+c];
+  if(!cell){html+='<div class="cell empty"></div>';continue}
+  let letters=cell.words.filter(w=>isSolved(w.entry)).map(w=>w.entry.word[w.index]);
+  let ch=letters[0]||'',all=cell.words.every(w=>isSolved(w.entry));
+  let active=selected&&cell.words.some(w=>w.entry.id===selected.id);
+  html+=`<button class="cell ${ch?'filled':''} ${all?'solved':''} ${active?'selected':''}" onclick="tapCell(${r},${c})">${ch}${cell.words.length>1?'<i class="dot"></i>':''}</button>`;
+ }
+ html+='</div>';$('board').innerHTML=html;
+ const count=level.entries.filter(isSolved).length;$('progressBar').style.width=(count/level.entries.length*100)+'%';
+ if(count===level.entries.length){setTimeout(()=>{toast('أحسنت! اكتملت المرحلة ✨');showLevels()},650)}
+}
+function tapCell(r,c){
+ const cell=makeCells()[r+","+c];if(!cell)return;
+ let options=cell.words.filter(w=>!isSolved(w.entry));
+ if(!options.length){toast('هذه الخانة حُلّت بالفعل');return}
+ let chosen=options[0];
+ if(options.length>1){
+  if(lastCell===r+","+c){let current=options.findIndex(w=>w.entry.id===selected?.id);chosen=options[(current+1+options.length)%options.length]}
+  else chosen=options.find(w=>w.entry.d==='h')||options[0];
+ }
+ lastCell=r+","+c;selected=chosen.entry;selectedDir=selected.d;openClue(selected);
+}
+function getDraft(e){
+ let d=drafts[key()+"_"+e.id];if(!d)d=Array(e.word.length).fill('');
+ const cells=makeCells();
+ [...e.word].forEach((ch,i)=>{
+  let r=e.r+(e.d==='v'?i:0),c=e.c+(e.d==='h'?i:0),cell=cells[r+","+c];
+  let solvedLetter=cell.words.find(w=>isSolved(w.entry));
+  if(solvedLetter)d[i]=solvedLetter.entry.word[solvedLetter.index];
+ });
+ return d;
+}
+function openClue(e){
+ selected=e;$('clueText').textContent=e.clue;$('clueEmoji').textContent=e.emoji||'';
+ $('clueDirection').textContent=e.d==='h'?'أفقياً':'رأسياً';
+ let d=getDraft(e);drafts[key()+"_"+e.id]=d;
+ $('letterBoxes').innerHTML='';
+ e.word.split('').forEach((ch,i)=>{
+  let inp=document.createElement('input');inp.className='letter';inp.maxLength=1;inp.autocomplete='off';inp.autocapitalize='off';inp.spellcheck=false;inp.setAttribute('aria-label','الحرف '+(i+1));
+  inp.value=d[i]||'';
+  let cell=makeCells()[ (e.r+(e.d==='v'?i:0))+","+(e.c+(e.d==='h'?i:0)) ];
+  let fixed=cell.words.some(w=>isSolved(w.entry));
+  if(fixed){inp.readOnly=true;inp.classList.add('locked')}
+  inp.addEventListener('input',()=>{let v=[...inp.value].slice(-1)[0]||'';inp.value=v;d[i]=v;drafts[key()+"_"+e.id]=d;if(v){let next=[...$('letterBoxes').children].slice(i+1).find(x=>!x.readOnly);if(next)next.focus()}});
+  inp.addEventListener('keydown',ev=>{
+   if(ev.key==='Backspace'&&!inp.value){let prev=[...$('letterBoxes').children].slice(0,i).reverse().find(x=>!x.readOnly);if(prev)prev.focus()}
+   if(ev.key==='ArrowLeft'){let n=inp.nextElementSibling;if(n)n.focus()}
+   if(ev.key==='ArrowRight'){let p=inp.previousElementSibling;if(p)p.focus()}
+  });
+  $('letterBoxes').appendChild(inp);
+ });
+ show('clue');
+ let first=[...$('letterBoxes').children].find(x=>!x.readOnly);
+ if(first)setTimeout(()=>first.focus(),120);
+}
+function leaveClue(){if(selected)delete drafts[key()+"_"+selected.id];selected=null;renderBoard();show('puzzle')}
+function clearEditable(){
+ const d=getDraft(selected);selected.word.split('').forEach((_,i)=>{
+  let input=$('letterBoxes').children[i];if(input&&!input.readOnly){input.value='';d[i]=''}
+ });drafts[key()+"_"+selected.id]=d;
+}
+function checkAnswer(){
+ if(!selected)return;
+ const inputs=[...$('letterBoxes').children],answer=inputs.map(x=>x.value).join('');
+ if([...answer].length!==[...selected.word].length||inputs.some(x=>!x.value)){toast('أكمل جميع الخانات أولاً');return}
+ if(answer===selected.word){
+  inputs.forEach(x=>x.classList.add('right'));
+  let list=saved[key()]||[];if(!list.includes(selected.id))list.push(selected.id);saved[key()]=list;save();
+  delete drafts[key()+"_"+selected.id];
+  setTimeout(()=>{selected=null;renderBoard();show('puzzle')},700);
+ }else{
+  inputs.forEach(x=>x.classList.add('wrong'));
+  setTimeout(()=>inputs.forEach(x=>x.classList.remove('wrong')),750);
+  toast('ليست الإجابة الصحيحة، حاول مرة أخرى');
+ }
+}
+let toastTimer;function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').style.display='none',1900)}
+</script>
+</body>
+  </html>
