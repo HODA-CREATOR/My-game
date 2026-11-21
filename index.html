@@ -41,14 +41,22 @@ h1{font-size:clamp(28px,7vw,42px);margin:10px 0 12px}h2{font-size:24px;margin:10
 <div id="app">
 <header><div class="brand">✦ لعبتي</div><div class="small">ألغاز هادئة • بلا مؤقت</div></header>
 
-<section id="home" class="screen active center">
-  <div style="font-size:58px;margin-bottom:14px">✧</div>
+<section id="home" class="screen active center"
+style="
+  min-height:75vh;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(#090d1866,#090d18aa),url('icon-512.png') center/cover no-repeat;
+  border-radius:24px;
+  padding:20px;
+">
   <h1>لعبتي</h1>
-  <p class="sub">اكتشف الكلمات، واربط الحروف، واستمتع بالتفكير.</p>
   <button class="btn primary" onclick="showCategories()">ابدأ</button>
   <p class="note">نسخة تجريبية أولية</p>
 </section>
-
+  
 <section id="categories" class="screen">
   <div class="topline"><button class="back" onclick="show('home')">← الرئيسية</button><span class="small">اختر فئة</span></div>
   <h2>الفئات</h2><div id="categoryList" class="gridlist"></div>
